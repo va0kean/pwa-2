@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b1220" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <title>Архив статей</title>
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <h1>Архив статей</h1>
+        <p id="stats" class="stats">Загрузка данных...</p>
+        <input id="searchInput" type="search" placeholder="Поиск по категории, автору или названию" />
+      </header>
+
+      <main>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th data-sort-key="category" class="sortable">Категория</th>
+                <th data-sort-key="author" class="sortable">Автор</th>
+                <th data-sort-key="title" class="sortable">Название</th>
+                <th data-sort-key="status" class="sortable">Статус</th>
+              </tr>
+            </thead>
+            <tbody id="articlesBody"></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <dialog id="articleDialog">
+      <article class="dialog-content">
+        <header class="dialog-header">
+          <h2 id="dialogTitle"></h2>
+          <button id="closeDialogBtn" type="button" class="plain-btn">Закрыть</button>
+        </header>
+        <p id="dialogMeta" class="dialog-meta"></p>
+        <pre id="dialogText"></pre>
+      </article>
+    </dialog>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
