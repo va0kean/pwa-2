@@ -40,19 +40,28 @@ const articleById = new Map();
 
 init().catch((error) => {
   console.error(error);
-  statsEl.textContent = "Ошибка загрузки данных. Проверьте public/data/articles.json";
+  statsEl.textContent = "Ошибка загрузки данных. Проверьте config.json и доступность JSON базы.";
 });
 
 async function init() {
+  const base = import.meta.env.BASE_URL;
+
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/sw.js").catch((err) => {
+    navigator.serviceWorker.register(`${base}sw.js`).catch((err) => {
       console.warn("SW registration error", err);
     });
   }
 
-  const response = await fetch("/data/articles.json", { cache: "no-cache" });
+  const config = await loadConfig(base);
+  const dataUrl = normalizeDatasetUrl(
+    config.datasetUrl && config.datasetUrl.trim()
+      ? config.datasetUrl.trim()
+      : `${base}data/articles.json`
+  );
+
+  const response = await fetch(dataUrl, { cache: "no-cache" });
   if (!response.ok) {
-    throw new Error(`Не удалось загрузить JSON: ${response.status}`);
+    throw new Error(`Не удалось загрузить JSON: ${response.status} (${dataUrl})`);
   }
 
   const data = await response.json();
@@ -74,6 +83,22 @@ async function init() {
 
   bindEvents();
   filterSortAndRender();
+}
+
+async function loadConfig(base) {
+  try {
+    const response = await fetch(`${base}config.json`, { cache: "no-cache" });
+    if (!response.ok) return { datasetUrl: "" };
+    return await response.json();
+  } catch {
+    return { datasetUrl: "" };
+  }
+}
+
+function normalizeDatasetUrl(url) {
+  const match = url.match(/drive\.google\.com\/file\/d\/([^/]+)\//i);
+  if (!match) return url;
+  return `https://drive.usercontent.google.com/download?id=${match[1]}&export=download&confirm=t`;
 }
 
 function bindEvents() {
@@ -231,3 +256,5 @@ function escapeHtml(value) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
 }
+
+
